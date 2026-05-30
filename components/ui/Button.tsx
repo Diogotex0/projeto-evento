@@ -26,22 +26,26 @@ const sizes = {
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant = "primary", size = "md", loading, icon, children, disabled, ...props }, ref) => {
+  ({ className, variant = "primary", size = "md", loading, icon, children, disabled, type = "button", onClick, ...rest }, ref) => {
+    const isDisabled = disabled || loading;
     return (
       <motion.button
         ref={ref}
-        whileHover={{ scale: disabled || loading ? 1 : 1.01 }}
-        whileTap={{ scale: disabled || loading ? 1 : 0.98 }}
+        type={type}
+        onClick={onClick}
+        disabled={isDisabled}
+        whileHover={{ scale: isDisabled ? 1 : 1.01 }}
+        whileTap={{ scale: isDisabled ? 1 : 0.98 }}
+        aria-disabled={isDisabled}
         className={cn(
           "inline-flex items-center justify-center gap-2 font-medium transition-all duration-200 cursor-pointer select-none disabled:opacity-50 disabled:cursor-not-allowed",
           variants[variant],
           sizes[size],
           className
         )}
-        disabled={disabled || loading}
-        {...(props as any)}
+        {...(rest as Record<string, unknown>)}
       >
-        {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : icon}
+        {loading ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" /> : icon}
         {children}
       </motion.button>
     );

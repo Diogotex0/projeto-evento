@@ -43,9 +43,10 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           <div className="lg:hidden flex items-center gap-3 px-4 py-3 bg-white border-b border-[#EFE7DE] sticky top-0 z-30">
             <button
               onClick={() => setMobileSidebar(true)}
+              aria-label="Abrir menu de navegação"
               className="p-2 rounded-lg hover:bg-[#EFE7DE] transition-colors"
             >
-              <Menu className="w-5 h-5" />
+              <Menu className="w-5 h-5" aria-hidden="true" />
             </button>
             <span className="font-bold text-[#111827]">
               evently<span className="text-[#D4B996]">+</span>

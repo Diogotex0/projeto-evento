@@ -1,7 +1,7 @@
 "use client";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle, XCircle, AlertCircle, X, Info } from "lucide-react";
-import { useState, useCallback, createContext, useContext } from "react";
+import { useState, useCallback, useMemo, createContext, useContext } from "react";
 import { cn } from "@/lib/utils";
 
 type ToastType = "success" | "error" | "warning" | "info";
@@ -52,11 +52,11 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     setTimeout(() => removeToast(id), 4000);
   }, [removeToast]);
 
-  const contextValue: ToastContextType = {
+  const contextValue = useMemo<ToastContextType>(() => ({
     toast: addToast,
     success: (title, message) => addToast("success", title, message),
     error: (title, message) => addToast("error", title, message),
-  };
+  }), [addToast]);
 
   return (
     <ToastContext.Provider value={contextValue}>
@@ -81,9 +81,10 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
               </div>
               <button
                 onClick={() => removeToast(t.id)}
+                aria-label="Fechar notificação"
                 className="text-[#6B7280] hover:text-[#111827] transition-colors"
               >
-                <X className="w-4 h-4" />
+                <X className="w-4 h-4" aria-hidden="true" />
               </button>
             </motion.div>
           ))}

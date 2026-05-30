@@ -1,6 +1,7 @@
 "use client";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
+import { useEffect, useId } from "react";
 
 interface ModalProps {
   open: boolean;
@@ -17,6 +18,15 @@ const sizes = {
 };
 
 export function Modal({ open, onClose, title, children, size = "md" }: ModalProps) {
+  const titleId = useId();
+
+  useEffect(() => {
+    if (!open) return;
+    const handleKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
+  }, [open, onClose]);
+
   return (
     <AnimatePresence>
       {open && (
@@ -27,8 +37,12 @@ export function Modal({ open, onClose, title, children, size = "md" }: ModalProp
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
             onClick={onClose}
+            aria-hidden="true"
           />
           <motion.div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={title ? titleId : undefined}
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -37,12 +51,13 @@ export function Modal({ open, onClose, title, children, size = "md" }: ModalProp
           >
             {title && (
               <div className="flex items-center justify-between px-6 py-5 border-b border-[#EFE7DE]">
-                <h2 className="text-lg font-semibold text-[#111827]">{title}</h2>
+                <h2 id={titleId} className="text-lg font-semibold text-[#111827]">{title}</h2>
                 <button
                   onClick={onClose}
+                  aria-label="Fechar modal"
                   className="w-8 h-8 flex items-center justify-center rounded-lg text-[#6B7280] hover:bg-[#EFE7DE] transition-colors"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-4 h-4" aria-hidden="true" />
                 </button>
               </div>
             )}

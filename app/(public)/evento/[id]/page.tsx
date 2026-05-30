@@ -1,7 +1,7 @@
 "use client";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect, use } from "react";
-import { MapPin, Calendar, Clock, Gift, QrCode, Copy, Check, ChevronDown, Heart, Sparkles } from "lucide-react";
+import { MapPin, Calendar, Clock, Gift, QrCode, Copy, Check, Heart, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Modal } from "@/components/ui/Modal";
@@ -9,13 +9,20 @@ import { ToastProvider, useToast } from "@/components/ui/Toast";
 import { mockEvents, mockSchedule, mockGifts } from "@/mock/events";
 import { formatDate, formatCurrency, getCountdown } from "@/lib/utils";
 import { Gift as GiftType } from "@/types";
+import { FAKE_QR_SVG } from "@/constants";
 
-const FAKE_QR = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0id2hpdGUiLz48ZyBmaWxsPSIjMTExODI3Ij48cmVjdCB4PSIxMCIgeT0iMTAiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcng9IjQiLz48cmVjdCB4PSIxNSIgeT0iMTUiIHdpZHRoPSI1MCIgaGVpZ2h0PSI1MCIgcng9IjIiIGZpbGw9IndoaXRlIi8+PHJlY3QgeD0iMjAiIHk9IjIwIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHJ4PSIyIi8+PHJlY3QgeD0iMjUiIHk9IjI1IiB3aWR0aD0iMzAiIGhlaWdodD0iMzAiIHJ4PSIyIiBmaWxsPSJ3aGl0ZSIvPjxyZWN0IHg9IjMwIiB5PSIzMCIgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiByeD0iMiIvPjxyZWN0IHg9IjEzMCIgeT0iMTAiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcng9IjQiLz48cmVjdCB4PSIxMzUiIHk9IjE1IiB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHJ4PSIyIiBmaWxsPSJ3aGl0ZSIvPjxyZWN0IHg9IjE0MCIgeT0iMjAiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcng9IjIiLz48cmVjdCB4PSIxNDUiIHk9IjI1IiB3aWR0aD0iMzAiIGhlaWdodD0iMzAiIHJ4PSIyIiBmaWxsPSJ3aGl0ZSIvPjxyZWN0IHg9IjE1MCIgeT0iMzAiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgcng9IjIiLz48cmVjdCB4PSIxMCIgeT0iMTMwIiB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHJ4PSI0Ii8+PHJlY3QgeD0iMTUiIHk9IjEzNSIgd2lkdGg9IjUwIiBoZWlnaHQ9IjUwIiByeD0iMiIgZmlsbD0id2hpdGUiLz48cmVjdCB4PSIyMCIgeT0iMTQwIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHJ4PSIyIi8+PHJlY3QgeD0iMjUiIHk9IjE0NSIgd2lkdGg9IjMwIiBoZWlnaHQ9IjMwIiByeD0iMiIgZmlsbD0id2hpdGUiLz48cmVjdCB4PSIzMCIgeT0iMTUwIiB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHJ4PSIyIi8+PC9nPjwvc3ZnPg==";
+const NAV_LINKS = [
+  { id: "sobre", label: "Sobre o evento" },
+  { id: "cronograma", label: "Cronograma" },
+  { id: "presentes", label: "Presentes" },
+  { id: "localizacao", label: "Localização" },
+];
 
 function CountdownTimer({ targetDate }: { targetDate: string }) {
-  const [countdown, setCountdown] = useState(getCountdown(targetDate));
+  const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
+    setCountdown(getCountdown(targetDate));
     const interval = setInterval(() => setCountdown(getCountdown(targetDate)), 1000);
     return () => clearInterval(interval);
   }, [targetDate]);
@@ -67,25 +74,20 @@ function EventContent({ id }: { id: string }) {
   const [rsvpDone, setRsvpDone] = useState(false);
   const [activeSection, setActiveSection] = useState("sobre");
 
-  const navLinks = [
-    { id: "sobre", label: "Sobre o evento" },
-    { id: "cronograma", label: "Cronograma" },
-    { id: "presentes", label: "Presentes" },
-    { id: "localizacao", label: "Localização" },
-  ];
-
   const handleRSVP = async () => {
     await new Promise((r) => setTimeout(r, 1000));
     setRsvpDone(true);
-    setTimeout(() => { setRsvpModal(false); setRsvpDone(false); }, 2000);
     success("Presença confirmada!", "Obrigado por confirmar sua presença.");
+    const t = setTimeout(() => { setRsvpModal(false); setRsvpDone(false); }, 2000);
+    return () => clearTimeout(t);
   };
 
   const handleCopyPix = () => {
     navigator.clipboard.writeText(event.pixKey ?? "");
     setCopiedPix(true);
     success("PIX copiado!", "Chave PIX copiada para a área de transferência.");
-    setTimeout(() => setCopiedPix(false), 2000);
+    const t = setTimeout(() => setCopiedPix(false), 2000);
+    return () => clearTimeout(t);
   };
 
   const handleChooseGift = async () => {
@@ -101,6 +103,9 @@ function EventContent({ id }: { id: string }) {
           src={event.banner}
           alt={event.name}
           className="w-full h-full object-cover"
+          width={1200}
+          height={630}
+          fetchPriority="high"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10" />
 
@@ -130,7 +135,7 @@ function EventContent({ id }: { id: string }) {
         <div className="max-w-3xl mx-auto px-4">
           <div className="flex items-center justify-between">
             <nav className="flex gap-0 overflow-x-auto">
-              {navLinks.map((link) => (
+              {NAV_LINKS.map((link) => (
                 <button
                   key={link.id}
                   onClick={() => {
@@ -474,7 +479,7 @@ function EventContent({ id }: { id: string }) {
       <Modal open={pixModal} onClose={() => setPixModal(false)} title="Contribuição via PIX">
         <div className="text-center space-y-4">
           <div className="bg-[#FAF8F5] border border-[#EFE7DE] rounded-2xl p-4 inline-block">
-            <img src={FAKE_QR} alt="QR Code" className="w-48 h-48 mx-auto" />
+            <img src={FAKE_QR_SVG} alt="QR Code" className="w-48 h-48 mx-auto" />
           </div>
           <div>
             <p className="text-sm text-[#6B7280] mb-1">Chave PIX</p>

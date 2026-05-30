@@ -1,7 +1,7 @@
 "use client";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
-import { Plus, Clock, Edit2, Trash2, GripVertical, Check } from "lucide-react";
+import { Plus, Clock, Edit2, Trash2, Check } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
@@ -9,21 +9,18 @@ import { Modal } from "@/components/ui/Modal";
 import { mockSchedule } from "@/mock/events";
 import { ScheduleItem } from "@/types";
 
-const timelineIcons: Record<string, string> = {
-  "Chegada": "🎉",
-  "Cerimônia": "💍",
-  "Fotos": "📸",
-  "Jantar": "🍽️",
-  "Festa": "🎊",
-  "Bolo": "🎂",
-  "default": "⏰",
-};
+const timelineIcons: Array<[string, string]> = [
+  ["Chegada", "🎉"],
+  ["Cerimônia", "💍"],
+  ["Fotos", "📸"],
+  ["Jantar", "🍽️"],
+  ["Festa", "🎊"],
+  ["Bolo", "🎂"],
+];
 
-function getIcon(title: string) {
-  for (const key of Object.keys(timelineIcons)) {
-    if (title.includes(key)) return timelineIcons[key];
-  }
-  return timelineIcons.default;
+function getIcon(title: string): string {
+  const match = timelineIcons.find(([key]) => title.includes(key));
+  return match ? match[1] : "⏰";
 }
 
 export default function CronogramaPage() {

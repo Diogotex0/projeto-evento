@@ -6,7 +6,7 @@ import { ArrowLeft, Save, Eye, Trash2, Calendar, MapPin, Clock, QrCode, FileText
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
-import { Card, CardTitle, CardDescription } from "@/components/ui/Card";
+import { Card, CardTitle } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { mockEvents } from "@/mock/events";
 import { EVENT_TYPES } from "@/constants";
@@ -17,16 +17,16 @@ export default function EditarEventoPage({ params }: { params: Promise<{ id: str
   const { id } = use(params);
   const router = useRouter();
   const event = mockEvents.find((e) => e.id === id) ?? mockEvents[0];
-  const [saving, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({ ...event });
 
   const update = (field: string, value: string) =>
     setForm((prev) => ({ ...prev, [field]: value }));
 
   const handleSave = async () => {
-    setLoading(true);
+    setSaving(true);
     await new Promise((r) => setTimeout(r, 900));
-    setLoading(false);
+    setSaving(false);
     router.push("/eventos");
   };
 

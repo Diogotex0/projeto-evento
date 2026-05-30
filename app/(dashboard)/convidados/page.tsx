@@ -1,7 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { Search, Plus, Filter, Users, CheckCircle, Clock, XCircle, Mail, Phone, Trash2 } from "lucide-react";
+import { Search, Plus, Users, CheckCircle, Clock, XCircle, Mail, Phone, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Input } from "@/components/ui/Input";
@@ -154,9 +154,10 @@ export default function ConvidadosPage() {
                   </Badge>
                   <button
                     onClick={() => handleDelete(guest.id)}
-                    className="opacity-0 group-hover:opacity-100 text-[#6B7280] hover:text-red-500 transition-all"
+                    aria-label={`Remover convidado ${guest.name}`}
+                    className="text-[#EFE7DE] group-hover:text-[#6B7280] hover:!text-red-500 transition-colors"
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 className="w-4 h-4" aria-hidden="true" />
                   </button>
                 </div>
               </motion.div>
