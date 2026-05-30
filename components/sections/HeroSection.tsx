@@ -72,10 +72,12 @@ export function HeroSection() {
                   <ArrowRight className="w-4 h-4" />
                 </Button>
               </Link>
-              <Button size="lg" variant="outline" className="gap-2 border-[#EFE7DE]">
-                <Play className="w-4 h-4" />
-                Ver demonstração
-              </Button>
+              <Link href="/evento/evt-1">
+                <Button size="lg" variant="outline" className="gap-2 border-[#EFE7DE]">
+                  <Play className="w-4 h-4" />
+                  Ver demonstração
+                </Button>
+              </Link>
             </motion.div>
 
             <motion.div
